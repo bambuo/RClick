@@ -75,7 +75,7 @@ class AppState: ObservableObject {
     }
     
     func getAppItem(rid: String) -> OpenWithApp? {
-        return apps.first { rid.contains($0.id) }
+        return apps.first { $0.id == rid }
     }
     
     func getFileType(rid: String) -> NewFile? {
@@ -244,8 +244,9 @@ class AppState: ObservableObject {
             apps = try decoder.decode([OpenWithApp].self, from: appItemData)
             logger.info("load apps success")
         } else {
-            logger.warning("load apps failed")
+            logger.warning("load apps failed, use defaults")
             apps = OpenWithApp.defaultApps
+            try? save()
         }
     }
 }

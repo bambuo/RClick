@@ -467,44 +467,36 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func openApp(rid: String, target: [String]) {
+        logger.info("openApp called, rid=\(rid), targets=\(target)")
         guard let rcitem = appState.getAppItem(rid: rid) else {
-            logger.warning("when openapp,but not have app \(rid)")
+            logger.warning("when openapp,but not have app \(rid), available apps: \(self.appState.apps.map { $0.id })")
             return
         }
 
+        logger.info("opening with app: \(rcitem.name), url: \(rcitem.url.path)")
         let appUrl = rcitem.url
         let config = NSWorkspace.OpenConfiguration()
-        config.promptsUserIfNeeded = false
+        config.promptsUserIfNeeded = true
 
         for dirPath in target {
-            let dir = URL(fileURLWithPath: dirPath.removingPercentEncoding ?? dirPath, isDirectory: true)
+            let decodedPath = dirPath.removingPercentEncoding ?? dirPath
+            let dir = URL(fileURLWithPath: decodedPath, isDirectory: false)
+            logger.info("opening path: \(decodedPath) with app: \(appUrl.path())")
 
             config.arguments = rcitem.arguments
             config.environment = rcitem.environment
 
             if appUrl.path.hasSuffix("WezTerm.app") {
-                // 创建一个 Process 实例
                 let process = Process()
-
-                // 设置要运行的二进制文件路径
                 process.executableURL = URL(fileURLWithPath: "/Users/lixu/play/rpm/target/debug/rpm")
-
-                // 设置命令行参数（如果有）
                 process.arguments = ["--name", "arg2"]
-
-                // 设置标准输出和标准错误
                 let pipe = Pipe()
                 process.standardOutput = pipe
                 process.standardError = pipe
 
                 do {
-                    // 启动进程
                     try process.run()
-
-                    // 等待进程完成
                     process.waitUntilExit()
-
-                    // 读取输出
                     let data = pipe.fileHandleForReading.readDataToEndOfFile()
                     if let output = String(data: data, encoding: .utf8) {
                         print("Output: \(output)")
@@ -513,12 +505,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     print("Error: \(error)")
                 }
             } else {
-                logger.info("starting open dir .........\(dir.path), app:\(appUrl.path())")
                 NSWorkspace.shared.open([dir], withApplicationAt: appUrl, configuration: config) { runningApp, error in
                     if let error = error {
-                        print("Error opening application: \(error.localizedDescription)")
+                        self.logger.error("Error opening application: \(error.localizedDescription)")
                     } else if let runningApp = runningApp {
-                        print("Successfully opened application: \(runningApp.localizedName ?? "Unknown")")
+                        self.logger.info("Successfully opened application: \(runningApp.localizedName ?? "Unknown") for path: \(dir.path)")
+                    } else {
+                        self.logger.warning("NSWorkspace.open completed without runningApp or error for \(dir.path)")
                     }
                 }
             }

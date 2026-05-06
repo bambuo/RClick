@@ -39,8 +39,9 @@ class Messager {
 
     func sendMessage(name: String, data: MessagePayload) {
         let message: String = createMessageData(messsagePayload: data)
-        logger.warning("start sendMessage ... to \(name)")
+        logger.warning("start sendMessage ... to \(name), payload: \(data.description)")
         center.postNotificationName(NSNotification.Name(name), object: message, userInfo: nil, deliverImmediately: true)
+        logger.info("sendMessage posted: \(name)")
     }
 
     func createMessageData(messsagePayload: MessagePayload) -> String {
@@ -69,6 +70,7 @@ class Messager {
     }
 
     @objc func recievedMessage(_ notification: NSNotification) {
+        logger.info("recievedMessage: name=\(notification.name.rawValue), object=\(String(describing: notification.object))")
         let payload = reconstructEntry(messagePayload: notification.object as! String)
         if let handler = bus[notification.name.rawValue] {
             handler(payload)

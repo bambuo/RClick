@@ -17,8 +17,8 @@ protocol RCBase: Hashable, Identifiable, Codable {
 struct OpenWithApp: RCBase {
     var id: String
 
-    init(id: String = UUID().uuidString, appURL url: URL) {
-        self.id = id
+    init(id: String = "", appURL url: URL) {
+        self.id = id.isEmpty ? url.path : id
         self.url = url
         itemName = url.deletingPathExtension().lastPathComponent
     }

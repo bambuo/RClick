@@ -137,6 +137,7 @@ struct AppsSettingsTabView: View {
                 case .success(let files):
                     if let url = files.first {
                         appState.addApp(item: OpenWithApp(appURL: url))
+                        messager.sendMessage(name: "running", data: MessagePayload(action: "running", target: []))
                     }
                 case .failure(let error):
                     print(error)

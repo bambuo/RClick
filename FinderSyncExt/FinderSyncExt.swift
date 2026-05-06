@@ -370,16 +370,20 @@ class FinderSyncExt: FIFinderSync {
     }
 
     @objc func appOpen(_ menuItem: NSMenuItem) {
-        guard let rid = tagRidDict[menuItem.tag] else {
-            logger.warning("not get rid")
+        logger.info("appOpen clicked, tag: \(menuItem.tag), title: \(menuItem.title)")
+        guard let rid = self.tagRidDict[menuItem.tag] else {
+            logger.warning("not get rid for tag: \(menuItem.tag)")
             return
         }
+        logger.info("appOpen rid: \(rid)")
 
-        let target: [String] = getTargets(triggerManKind)
+        let target: [String] = self.getTargets(self.triggerManKind)
+        logger.info("appOpen targets: \(target)")
         if !target.isEmpty {
-            messager.sendMessage(name: Key.messageFromFinder, data: MessagePayload(action: "open", target: target, rid: rid))
+            self.messager.sendMessage(name: Key.messageFromFinder, data: MessagePayload(action: "open", target: target, rid: rid))
+            logger.info("appOpen message sent with rid: \(rid), targets: \(target)")
         } else {
-            logger.warning("not get target")
+            logger.warning("not get target for appOpen")
         }
     }
 
