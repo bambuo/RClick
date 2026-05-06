@@ -41,11 +41,14 @@ struct RClickApp: App {
             .modelContainer(SharedDataManager.sharedModelContainer)
 
         // showMenuBarExtra 为 true 时显示菜单条
-        MenuBarExtra(
-            "RClick", image: "MenuBar", isInserted: $showMenuBarExtra
-        ) {
+        MenuBarExtra(isInserted: $showMenuBarExtra) {
             MenuBarView()
-        }.defaultAppStorage(.group)
+        } label: {
+            Image("MenuBar")
+                .renderingMode(.template)
+                .accessibilityLabel("RClick")
+        }
+        .defaultAppStorage(.group)
     }
 }
 
