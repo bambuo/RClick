@@ -7,13 +7,12 @@
 
 import AppKit
 import SwiftUI
-import UniformTypeIdentifiers
 
 struct NewFileSettingsTabView: View {
     @AppLog(category: "NewFileSettingsTabView")
     private var logger
     
-    @EnvironmentObject var appState: AppState
+    @Environment(AppState.self) var appState
     @State private var editingFile: NewFile?
     @State private var showSelectApp = false
     
@@ -29,13 +28,14 @@ struct NewFileSettingsTabView: View {
     // 新建状态
     @State private var isAddingNew = false
     
-    let messager = Messager.shared
+    let messenger = Messenger.shared
     // 优化后的存储路径选择
     let templatesDir: URL? = // 选项1: 应用程序支持目录（推荐）
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first?
         .appendingPathComponent("RClick/Templates")
     
     var body: some View {
+        @Bindable var appState = appState
         ZStack {
             VStack {
                 HStack {
@@ -126,7 +126,7 @@ struct NewFileSettingsTabView: View {
                                 Toggle("", isOn: $item.enabled)
                                     .onChange(of: item.enabled) {
                                         appState.toggleActionItem()
-                                        messager.sendMessage(name: "running", data: MessagePayload(action: "running", target: []))
+                                        messenger.sendMessage(name: "running", data: MessagePayload(action: .running, target: []))
                                     }
                                     .toggleStyle(.switch)
                                     .frame(width: 50)
@@ -251,7 +251,7 @@ struct NewFileSettingsTabView: View {
                                             editingOpenApp = url
                                         }
                                     case .failure(let error):
-                                        print(error)
+                                        logger.error("Failed to select app: \(error.localizedDescription)")
                                     }
                                 }
                                 .zIndex(1)
@@ -338,7 +338,7 @@ struct NewFileSettingsTabView: View {
         Task {
             appState.sync()
         }
-        messager.sendMessage(name: "running", data: MessagePayload(action: "running", target: []))
+        messenger.sendMessage(name: "running", data: MessagePayload(action: .running, target: []))
         cancelEditing()
     }
 }

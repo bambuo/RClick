@@ -8,7 +8,7 @@ import SwiftUI
 
 struct UpdateView: View {
     @Environment(\.dismiss) private var dismiss
-    @ObservedObject var updateManager: UpdateManager
+    var updateManager: UpdateManager
     
     var body: some View {
         VStack(spacing: 20) {

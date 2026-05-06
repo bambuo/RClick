@@ -9,7 +9,7 @@ import SwiftData
 import Foundation
 
 @Model
-class PermDir {
+class PersistentPermDir {
     @Attribute(.unique) var id: String
     var url: URL
     var bookmark: Data

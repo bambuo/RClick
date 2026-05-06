@@ -6,42 +6,12 @@
 //
 
 import Foundation
-
-import os.log
+import OSLog
 
 let bundleIdentifier = Bundle.main.bundleIdentifier ?? ""
 var subsystem: String { bundleIdentifier }
 
 private let logger = Logger(subsystem: subsystem, category: "user_defaults")
-
-enum Key {
-    static let showContextualMenuForItem = "SHOW_CONTEXTUAL_MENU_FOR_ITEM"
-    static let showContextualMenuForContainer = "SHOW_CONTEXTUAL_MENU_FOR_CONTAINER"
-    static let showContextualMenuForSidebar = "SHOW_CONTEXTUAL_MENU_FOR_SIDEBAR"
-    static let showToolbarItemMenu = "SHOW_TOOLBAR_ITEM_MENU"
-    static let showDockIcon = "SHOW_DOCK_ICON"
-
-    static let globalApplicationArgumentsString = "GLOBAL_APPLICATION_ARGUMENTS_STRING"
-    static let globalApplicationEnvironmentString = "GLOBAL_APPLICATION_ENVIRONMENT_STRING"
-
-    static let copySeparator = "COPY_SEPARATOR"
-    static let newFileName = "NEW_FILE_NAME"
-    static let newFileExtension = "NEW_FILE_EXTENSION"
-
-    static let showSubMenuForApplication = "SHOW_SUB_MENU_FOR_APPLICATION"
-    static let showSubMenuForAction = "SHOW_SUB_MENU_FOR_ACTION"
-    static let messageFromFinder = "RCLICK_FINDER_Main"
-    static let messageFromMain = "RCLICK_MAIN_FINDER"
-    
-    static let apps = "RCLICK_APPs"
-    static let actions = "RCLICK_ACTIONS"
-    static let fileTypes = "RCLICK_FILE_TYPES"
-    static let permDirs = "RCLICK_PERMISSIVE_DIRS"   
-    static let commonDirs = "RCLICK_COMMON_DIRS"
-    static let showMenuBarExtra = "showMenuBarExtra"
-    static let showInDock = "SHOW_IN_DOCK"
-    
-}
 
 enum NewFileExtension: String, CaseIterable, Identifiable {
     var id: String { rawValue }
@@ -97,45 +67,49 @@ extension String {
 
 extension UserDefaults {
     static var group: UserDefaults {
-        UserDefaults(suiteName: "group.cn.wflixu.RClick")!
+        guard let defaults = UserDefaults(suiteName: "group.cn.wflixu.RClick") else {
+            logger.critical("Failed to initialize App Group UserDefaults. Check entitlements and provisioning profile.")
+            return .standard
+        }
+        return defaults
     }
 
     var showContextualMenuForItem: Bool {
-        defaults(for: Key.showContextualMenuForItem) ?? true
+        defaults(for: StorageKey.showContextualMenuForItem) ?? true
     }
 
     var showContextualMenuForContainer: Bool {
-        defaults(for: Key.showContextualMenuForContainer) ?? true
+        defaults(for: StorageKey.showContextualMenuForContainer) ?? true
     }
 
     var showContextualMenuForSidebar: Bool {
-        defaults(for: Key.showContextualMenuForSidebar) ?? true
+        defaults(for: StorageKey.showContextualMenuForSidebar) ?? true
     }
 
     var showToolbarItemMenu: Bool {
-        defaults(for: Key.showToolbarItemMenu) ?? true
+        defaults(for: StorageKey.showToolbarItemMenu) ?? true
     }
 
     var copySeparator: String {
-        let spparator = defaults(for: Key.copySeparator) ?? ""
+        let spparator = defaults(for: StorageKey.copySeparator) ?? ""
         return spparator.isEmpty ? " " : spparator
     }
 
     var newFileName: String {
-        defaults(for: Key.newFileName) ?? "Untitled"
+        defaults(for: StorageKey.newFileName) ?? "Untitled"
     }
 
     var newFileExtension: NewFileExtension {
-        let fileExtensionRaw = defaults(for: Key.newFileExtension) ?? ""
+        let fileExtensionRaw = defaults(for: StorageKey.newFileExtension) ?? ""
         return NewFileExtension(rawValue: fileExtensionRaw) ?? .none
     }
 
     var showSubMenuForApplication: Bool {
-        defaults(for: Key.showSubMenuForApplication) ?? false
+        defaults(for: StorageKey.showSubMenuForApplication) ?? false
     }
 
     var showSubMenuForAction: Bool {
-        defaults(for: Key.showSubMenuForAction) ?? false
+        defaults(for: StorageKey.showSubMenuForAction) ?? false
     }
 
     private func defaults<T>(for key: String) -> T? {

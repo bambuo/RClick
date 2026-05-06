@@ -8,21 +8,21 @@
 import SwiftUI
 
 struct SettingsWindow: Scene {
-    @ObservedObject var appState: AppState
+    var appState: AppState
     
-    @EnvironmentObject var updateManager: UpdateManager
+    @Environment(UpdateManager.self) var updateManager: UpdateManager
     
     let onAppear: () -> Void
 
     var body: some Scene {
         Window("Settings", id: Constants.settingsWindowID) {
             SettingsView()
-                .environmentObject(appState)
+                .environment(appState)
                 .onAppear {
                     onAppear()
                 }
                 .frame(minWidth: 800, minHeight: 500)
-                .sheet(isPresented: $updateManager.showUpdateSheet) {
+                .sheet(isPresented: Bindable(updateManager).showUpdateSheet) {
                     UpdateView(updateManager: updateManager)
                 }
         }

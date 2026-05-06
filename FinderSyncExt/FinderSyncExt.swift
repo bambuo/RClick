@@ -6,11 +6,8 @@
 //
 
 import AppKit
-import Cocoa
 import FinderSync
 import SwiftData
-
-// MARK: DELETE
 
 import OSLog
 
@@ -20,28 +17,29 @@ private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "RClick",
 class FinderSyncExt: FIFinderSync {
     var myFolderURL = URL(fileURLWithPath: "/Users/")
     var isHostAppOpen = false
-    lazy var appState: AppState = .init(inExt: true)
+    var appState: AppState
 
-    private var tagRidDict: [Int: String] = [:]
+    private var tagToRidMap: [Int: String] = [:]
 
-    let messager = Messager.shared
+    let messenger = Messenger.shared
 
-    var triggerManKind = FIMenuKind.contextualMenuForContainer
+    var triggerMenuKind = FIMenuKind.contextualMenuForContainer
 
     // swiftdata
     private var modelContext: ModelContext?
 
     override init() {
+        self.appState = AppState(isInExtension: true)
         super.init()
 
         FIFinderSyncController.default().directoryURLs = [myFolderURL]
         logger.info("FinderSync() launched from \(Bundle.main.bundlePath as NSString)")
 
-        messager.on(name: "quit") { _ in
+        messenger.on(name: "quit") { _ in
 
             self.isHostAppOpen = false
         }
-        messager.on(name: "running") { payload in
+        messenger.on(name: "running") { payload in
 
             self.isHostAppOpen = true
 
@@ -66,11 +64,11 @@ class FinderSyncExt: FIFinderSync {
         modelContext = ModelContext(container)
 
         // 可选：立即查询一次，验证连接
-        let _ = fetchAllPermDirs()
+        let _ = fetchAllPersistentPermDirs()
     }
 
     // 修正后的查询方法
-    func fetchAllPermDirs() -> [PermDir] {
+    func fetchAllPersistentPermDirs() -> [PersistentPermDir] {
         guard let modelContext = modelContext else {
             logger.warning("模型上下文未初始化")
             return []
@@ -78,12 +76,12 @@ class FinderSyncExt: FIFinderSync {
 
         do {
             // 方法1：使用 id 进行排序（因为 id 是 String，遵循 Comparable）
-            let descriptor = FetchDescriptor<PermDir>(
+            let descriptor = FetchDescriptor<PersistentPermDir>(
                 sortBy: [SortDescriptor(\.id)] // 使用 id 排序
             )
 
             let permDirs = try modelContext.fetch(descriptor)
-            logger.info("找到 \(permDirs.count) 个 PermDir 记录")
+            logger.info("找到 \(permDirs.count) 个 PersistentPermDir 记录")
 
             // 打印所有记录用于调试
             for permDir in permDirs {
@@ -92,14 +90,14 @@ class FinderSyncExt: FIFinderSync {
 
             return permDirs
         } catch {
-            logger.warning("查询 PermDir 失败: \(error)")
+            logger.warning("查询 PersistentPermDir 失败: \(error)")
             return []
         }
     }
 
     func heartBeat() {
         logger.warning("start send message -- heartbeat")
-        messager.sendMessage(name: Key.messageFromFinder, data: MessagePayload(action: "heartbeat", target: [], rid: ""))
+        messenger.sendMessage(name: StorageKey.messageFromFinder, data: MessagePayload(action: .heartbeat))
     }
 
     // MARK: - Primary Finder Sync protocol methods
@@ -121,7 +119,7 @@ class FinderSyncExt: FIFinderSync {
     }
 
     override func requestBadgeIdentifier(for url: URL) {
-        NSLog("requestBadgeIdentifierForURL: %@", url.path as NSString)
+        logger.trace("requestBadgeIdentifierForURL: \(url.path)")
     }
 
     // MARK: - Menu and toolbar item support
@@ -135,13 +133,13 @@ class FinderSyncExt: FIFinderSync {
     }
 
     override var toolbarItemImage: NSImage {
-        return NSImage(named: "toolbar")!
+        return NSImage(named: "toolbar") ?? NSImage(systemSymbolName: "square.grid.3x3", accessibilityDescription: "RClick")!
     }
 
-    @MainActor override func menu(for menuKind: FIMenuKind) -> NSMenu {
+    override func menu(for menuKind: FIMenuKind) -> NSMenu {
         // Produce a menu for the extension.
         logger.info("mak menddd .....")
-        triggerManKind = menuKind
+        triggerMenuKind = menuKind
         logger.info("start build menu ....")
         let applicationMenu = NSMenu(title: "RClick")
         guard isHostAppOpen else {
@@ -200,10 +198,10 @@ class FinderSyncExt: FIFinderSync {
         var newTag = Int.random(in: 1 ... Int.max)
 
         // 确保生成的 tag 不在已有的 keys 中
-        while tagRidDict.keys.contains(newTag) {
+        while tagToRidMap.keys.contains(newTag) {
             newTag = Int.random(in: 1 ... Int.max)
         }
-        tagRidDict[newTag] = rid
+        tagToRidMap[newTag] = rid
         return newTag
     }
 
@@ -217,7 +215,8 @@ class FinderSyncExt: FIFinderSync {
             menuItem.action = #selector(actioning(_:))
             menuItem.toolTip = "\(item.name)"
             menuItem.tag = getUniqueTag(for: item.id)
-            menuItem.image = NSImage(systemSymbolName: item.icon, accessibilityDescription: item.name)!
+            menuItem.image = NSImage(systemSymbolName: item.icon, accessibilityDescription: item.name)
+                ?? NSImage(systemSymbolName: "questionmark.square.dashed", accessibilityDescription: "unknown")
 
             actionMenuitems.append(menuItem)
         }
@@ -226,7 +225,7 @@ class FinderSyncExt: FIFinderSync {
 
     // 创建文件菜单容器
     @objc func createCommonDirMenuItem() -> NSMenuItem? {
-        let commonDirs = appState.cdirs
+        let commonDirs = appState.commonDirs
         if commonDirs.isEmpty {
             logger.warning("没有启用的常用文件夹")
             return nil
@@ -235,7 +234,8 @@ class FinderSyncExt: FIFinderSync {
 
         let menuItem = NSMenuItem()
         menuItem.title = String(localized: "Favorite Folders")
-        menuItem.image = NSImage(systemSymbolName: "folder.badge.questionmark", accessibilityDescription: "folder.badge.questionmark")!
+        menuItem.image = NSImage(systemSymbolName: "folder.badge.questionmark", accessibilityDescription: "folder.badge.questionmark")
+            ?? NSImage(systemSymbolName: "folder", accessibilityDescription: "folder")
         let submenu = NSMenu(title: "Favorite Folders submenu")
 
         for dir in commonDirs {
@@ -245,7 +245,8 @@ class FinderSyncExt: FIFinderSync {
             menuItem.action = #selector(openCommonDir(_:))
             menuItem.toolTip = dir.url.path
             menuItem.tag = getUniqueTag(for: dir.id)
-            menuItem.image = NSImage(systemSymbolName: "folder", accessibilityDescription: "folder")!
+            menuItem.image = NSImage(systemSymbolName: "folder", accessibilityDescription: "folder")
+                ?? NSImage(systemSymbolName: "questionmark.folder", accessibilityDescription: "unknown")
 
             submenu.addItem(menuItem)
             logger.info("添加常用文件夹菜单项: \(dir.name)")
@@ -257,16 +258,16 @@ class FinderSyncExt: FIFinderSync {
     }
 
     @MainActor @objc func openCommonDir(_ menuItem: NSMenuItem) {
-        guard let rid = tagRidDict[menuItem.tag] else {
+        guard let rid = tagToRidMap[menuItem.tag] else {
             logger.warning("未获取到rid")
             return
         }
-        guard let dirItem = appState.cdirs.first(where: { $0.id == rid }) else {
+        guard let dirItem = appState.commonDirs.first(where: { $0.id == rid }) else {
             logger.warning("未找到对应的常用文件夹配置，rid: \(rid)")
             return
         }
 
-        messager.sendMessage(name: Key.messageFromFinder, data: MessagePayload(action: "common-dirs", target: [dirItem.url.path], rid: dirItem.id))
+        messenger.sendMessage(name: StorageKey.messageFromFinder, data: MessagePayload(action: .openCommonDirs, target: [dirItem.url.path], rid: dirItem.id))
         logger.info("已发送打开常用文件夹消息: \(dirItem.name), 路径: \(dirItem.url.path)")
     }
 
@@ -277,7 +278,8 @@ class FinderSyncExt: FIFinderSync {
         }
         let menuItem = NSMenuItem()
         menuItem.title = String(localized: "New File")
-        menuItem.image = NSImage(systemSymbolName: "doc.badge.plus", accessibilityDescription: "doc.badge.plus")!
+        menuItem.image = NSImage(systemSymbolName: "doc.badge.plus", accessibilityDescription: "doc.badge.plus")
+            ?? NSImage(systemSymbolName: "doc", accessibilityDescription: "doc")
         let submenu = NSMenu(title: "file create menu")
         for item in enabledFiletypeItems {
             let menuItem = NSMenuItem()
@@ -292,7 +294,8 @@ class FinderSyncExt: FIFinderSync {
                 menuItem.image?.isTemplate = true
             } else {
                 if !item.icon.starts(with: "icon-") {
-                    menuItem.image = NSImage(systemSymbolName: item.icon, accessibilityDescription: item.icon)!
+                    menuItem.image = NSImage(systemSymbolName: item.icon, accessibilityDescription: item.icon)
+                        ?? NSImage(systemSymbolName: "doc", accessibilityDescription: item.icon)
                 } else {
                     if let img = NSImage(named: item.icon) {
                         menuItem.image = img
@@ -308,37 +311,37 @@ class FinderSyncExt: FIFinderSync {
     }
 
     @MainActor @objc func createFile(_ menuItem: NSMenuItem) {
-        guard let rid = tagRidDict[menuItem.tag] else {
+        guard let rid = tagToRidMap[menuItem.tag] else {
             logger.warning("not get rid for \(menuItem.tag)")
             return
         }
         let url = FIFinderSyncController.default().targetedURL()
 
         if let target = url?.path() {
-            messager.sendMessage(name: Key.messageFromFinder, data: MessagePayload(action: "Create File", target: [target], rid: rid))
+            messenger.sendMessage(name: StorageKey.messageFromFinder, data: MessagePayload(action: .createFile, target: [target], rid: rid))
         }
     }
 
     @MainActor @objc func actioning(_ menuItem: NSMenuItem) {
-        guard let rid = tagRidDict[menuItem.tag] else {
+        guard let rid = tagToRidMap[menuItem.tag] else {
             logger.warning("not get rid")
             return
         }
-        let _ = fetchAllPermDirs()
-        let target = getTargets(triggerManKind)
-        let trigger = getTriggerKind(triggerManKind)
+        let _ = fetchAllPersistentPermDirs()
+        let target = getTargets(triggerMenuKind)
+        let trigger = getTriggerKind(triggerMenuKind)
         if target.isEmpty {
             logger.warning("not dir when actioning")
             return
         }
         logger.info("actioning \(rid) , trigger:\(trigger)")
-        messager.sendMessage(name: Key.messageFromFinder, data: MessagePayload(action: "actioning", target: target, rid: rid, trigger: trigger))
+        messenger.sendMessage(name: StorageKey.messageFromFinder, data: MessagePayload(action: .performAction, target: target, rid: rid, trigger: trigger))
     }
 
     func getTargets(_: FIMenuKind) -> [String] {
         var target: [String] = []
 
-        switch triggerManKind {
+        switch triggerMenuKind {
         case FIMenuKind.contextualMenuForItems:
             if let urls = FIFinderSyncController.default().selectedItemURLs() {
                 for url in urls {
@@ -371,16 +374,16 @@ class FinderSyncExt: FIFinderSync {
 
     @objc func appOpen(_ menuItem: NSMenuItem) {
         logger.info("appOpen clicked, tag: \(menuItem.tag), title: \(menuItem.title)")
-        guard let rid = self.tagRidDict[menuItem.tag] else {
+        guard let rid = self.tagToRidMap[menuItem.tag] else {
             logger.warning("not get rid for tag: \(menuItem.tag)")
             return
         }
         logger.info("appOpen rid: \(rid)")
 
-        let target: [String] = self.getTargets(self.triggerManKind)
+        let target: [String] = self.getTargets(self.triggerMenuKind)
         logger.info("appOpen targets: \(target)")
         if !target.isEmpty {
-            self.messager.sendMessage(name: Key.messageFromFinder, data: MessagePayload(action: "open", target: target, rid: rid))
+            self.messenger.sendMessage(name: StorageKey.messageFromFinder, data: MessagePayload(action: .openApp, target: target, rid: rid))
             logger.info("appOpen message sent with rid: \(rid), targets: \(target)")
         } else {
             logger.warning("not get target for appOpen")

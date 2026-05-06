@@ -5,16 +5,13 @@
 //  Created by 李旭 on 2024/4/10.
 //
 
-import AppKit
-import Cocoa
-import FinderSync
 import SwiftUI
 
 struct CommonDirsSettingTabView: View {
     @AppLog(category: "settings-general")
     private var logger
     
-    @EnvironmentObject var store: AppState
+    @Environment(AppState.self) var appState
     
     @State private var showCommonDirImporter = false
     
@@ -22,7 +19,7 @@ struct CommonDirsSettingTabView: View {
         VStack(alignment: .leading, spacing: 8) {
             Section {
                 List {
-                    ForEach(store.cdirs) { item in
+                    ForEach(appState.commonDirs) { item in
                         HStack {
                             Image(systemName: "folder")
                             Text(verbatim: item.url.path)
@@ -57,9 +54,9 @@ struct CommonDirsSettingTabView: View {
                     case .success(let urls):
                         if let url = urls.first {
                             let commonDir = CommonDir(id: UUID().uuidString, name: url.lastPathComponent, url: url, icon: "folder")
-                            if !store.cdirs.contains(where: { $0.url == commonDir.url }) {
-                                store.cdirs.append(commonDir)
-                                try? store.saveCommonDir()
+                            if !appState.commonDirs.contains(where: { $0.url == commonDir.url }) {
+                                appState.commonDirs.append(commonDir)
+                                try? appState.saveCommonDir()
                             }
                         }
                     case .failure(let error):
@@ -70,9 +67,9 @@ struct CommonDirsSettingTabView: View {
     }
 
     @MainActor private func removeCommonDir(_ item: CommonDir) {
-        if let index = store.cdirs.firstIndex(of: item) {
-            store.cdirs.remove(at: index)
-            try? store.saveCommonDir()
+        if let index = appState.commonDirs.firstIndex(of: item) {
+            appState.commonDirs.remove(at: index)
+            try? appState.saveCommonDir()
         }
     }
 }

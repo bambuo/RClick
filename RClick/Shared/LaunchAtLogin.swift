@@ -6,10 +6,9 @@
 //
 
 import Foundation
-
+import OSLog
 import SwiftUI
 import ServiceManagement
-import os.log
 
 public enum LaunchAtLogin {
     private static let logger = Logger(subsystem:  Bundle.main.bundleIdentifier ?? "LaunchAtLogin", category: "main")
@@ -21,8 +20,6 @@ public enum LaunchAtLogin {
     public static var isEnabled: Bool {
         get { SMAppService.mainApp.status == .enabled }
         set {
-            observable.objectWillChange.send()
-
             do {
                 if newValue {
                     if SMAppService.mainApp.status == .enabled {
@@ -52,7 +49,8 @@ public enum LaunchAtLogin {
 }
 
 extension LaunchAtLogin {
-    final class Observable: ObservableObject {
+    @Observable
+    final class Observable {
         var isEnabled: Bool {
             get { LaunchAtLogin.isEnabled }
             set {
@@ -87,7 +85,7 @@ extension LaunchAtLogin {
     ```
     */
     public struct Toggle<Label: View>: View {
-        @ObservedObject private var launchAtLogin = LaunchAtLogin.observable
+        @Bindable private var launchAtLogin = LaunchAtLogin.observable
         private let label: Label
 
         /**

@@ -12,7 +12,7 @@ import SwiftData
 class SharedDataManager {
     static let appGroupIdentifier = Constants.suitName
 
-    static var sharedModelContainer: ModelContainer = {
+    static let sharedModelContainer: ModelContainer = {
         do {
             let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
             try FileManager.default.createDirectory(at: appSupport, withIntermediateDirectories: true)
@@ -25,7 +25,7 @@ class SharedDataManager {
             )
 
             let container = try ModelContainer(
-                for: PermDir.self,
+                for: PersistentPermDir.self,
                 configurations: configuration
             )
 

@@ -6,7 +6,6 @@
 //
 
 import AppKit
-import Cocoa
 import FinderSync
 import SwiftUI
 
@@ -15,10 +14,10 @@ struct GeneralSettingsTabView: View {
     private var logger
 
     @AppStorage("extensionEnabled") private var extensionEnabled = false
-    @AppStorage(Key.showMenuBarExtra) private var showMenuBarExtra = true
-    @AppStorage(Key.showInDock) private var showInDock = false
+    @AppStorage(StorageKey.showMenuBarExtra) private var showMenuBarExtra = true
+    @AppStorage(StorageKey.showInDock) private var showInDock = false
 
-    @EnvironmentObject var store: AppState
+    @Environment(AppState.self) var appState
 
     @State private var showAlert = false
     @State private var wrongFold = false
@@ -28,7 +27,7 @@ struct GeneralSettingsTabView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.modelContext) private var modelContext
 
-    let messager = Messager.shared
+    let messenger = Messenger.shared
 
     var enableIcon: String {
         if extensionEnabled {
@@ -89,7 +88,7 @@ struct GeneralSettingsTabView: View {
             VStack(alignment: .leading) {
                 Section {
                     List {
-                        ForEach(store.dirs) { item in
+                        ForEach(appState.dirs) { item in
                             HStack {
                                 Image(systemName: "folder")
                                 Text(verbatim: item.url.path)
@@ -153,8 +152,7 @@ struct GeneralSettingsTabView: View {
                 startAddDir(dirs.first!)
 
             case let .failure(error):
-                // handle error
-                print(error)
+                logger.error("Failed to select file: \(error.localizedDescription)")
             }
         }
 
@@ -177,7 +175,7 @@ struct GeneralSettingsTabView: View {
     }
 
     func checkPermissionFolder() async {
-        let isEmpty = store.dirs.isEmpty
+        let isEmpty = appState.dirs.isEmpty
         if isEmpty {
             showAlert = true
         } else {
@@ -185,7 +183,7 @@ struct GeneralSettingsTabView: View {
         }
     }
 
-    private func insertNewPermDir(url: URL) {
+    private func insertNewPersistentPermDir(url: URL) {
         // 2. 创建唯一的ID
         let newId = UUID().uuidString
 
@@ -196,48 +194,48 @@ struct GeneralSettingsTabView: View {
         do {
             bookmarkData = try url.bookmarkData(options: .suitableForBookmarkFile, includingResourceValuesForKeys: nil, relativeTo: nil)
         } catch {
-            print("Failed to create bookmark data: \(error)")
-            // 根据你的需求决定错误处理方式，这里使用空Data
+            logger.error("Failed to create bookmark data: \(error.localizedDescription)")
             bookmarkData = Data()
         }
 
-        // 4. 创建新的PermDir实例
-        let newPermDir = PermDir(id: newId, url: url, bookmark: bookmarkData)
+        let newPersistentPermDir = PersistentPermDir(id: newId, url: url, bookmark: bookmarkData)
 
-        // 5. 插入到模型上下文:cite[1]
-        modelContext.insert(newPermDir)
+        modelContext.insert(newPersistentPermDir)
 
-        // 6. 保存上下文（SwiftData有时会自动保存，但显式保存是个好习惯，尤其是在重要操作后）
         do {
             try modelContext.save()
-            print("PermDir inserted successfully.")
+            logger.info("PersistentPermDir inserted successfully")
         } catch {
-            print("Failed to save context: \(error)")
+            logger.error("Failed to save context: \(error.localizedDescription)")
         }
     }
 
     @MainActor
     func startAddDir(_ url: URL) {
-        let hasParentDir = store.hasParentBookmark(of: url)
+        let hasParentDir = appState.hasParentBookmark(of: url)
         if hasParentDir {
             wrongFold = true
 //            showAlert = true
             logger.info("hasParentDir\(hasParentDir)")
         } else {
-            store.dirs.append(PermissiveDir(permUrl: url))
-            // 声明一个PermDir 实体，并插入到 modelContext 中
-            insertNewPermDir(url: url)
-            try? store.savePermissiveDir()
+            guard let permDir = PermissiveDir(permUrl: url) else {
+                logger.error("Failed to create PermissiveDir for: \(url.path)")
+                return
+            }
+            appState.dirs.append(permDir)
+            // 声明一个PersistentPermDir 实体，并插入到 modelContext 中
+            insertNewPersistentPermDir(url: url)
+            try? appState.savePermissiveDir()
 
-            let observeDirs = store.dirs.map { $0.url.path }
-            messager.sendMessage(name: "running", data: MessagePayload(action: "running", target: observeDirs))
+            let observeDirs = appState.dirs.map { $0.url.path }
+            messenger.sendMessage(name: "running", data: MessagePayload(action: .running, target: observeDirs))
         }
     }
 
     @MainActor private func removeBookmark(_ item: PermissiveDir) {
         // 根据item 查找offsets
-        if let index = store.dirs.firstIndex(of: item) {
-            store.deletePermissiveDir(index: index)
+        if let index = appState.dirs.firstIndex(of: item) {
+            appState.deletePermissiveDir(index: index)
         }
     }
 

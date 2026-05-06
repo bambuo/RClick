@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0775CA1FFBE046929BE96C2E /* RCAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A309BD773E340629F3BF2DE /* RCAction.swift */; };
+		163C14062FDD4176AE6CA3C7 /* FileOperationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62F2EF0D32347B9AE8DF9FE /* FileOperationService.swift */; };
+		1834E655212C4B569837F81A /* OpenWithApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A7D42261DA40A084606CEF /* OpenWithApp.swift */; };
+		19148EFD2DDA4EC6AEBCBE19 /* PermissiveDir.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF0504C338F49659D41F56D /* PermissiveDir.swift */; };
+		1ECCBD35FEF947E28134E75B /* RCAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A309BD773E340629F3BF2DE /* RCAction.swift */; };
+		56FCF1021EEE4F748460721F /* AppLaunchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7AF270AC9543F0B6EA138E /* AppLaunchService.swift */; };
+		59E295212FE248BDBFF9D80B /* CommonDir.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A9944CDACA4035A5402963 /* CommonDir.swift */; };
+		5B6D361F397C40F78188A9EB /* AppLaunchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7AF270AC9543F0B6EA138E /* AppLaunchService.swift */; };
 		5C043AC32BEB7C1200C837D1 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4288652BDA5536000C0828 /* AppLogger.swift */; };
 		5C119D072BBE9B9900B2D7C4 /* RClickApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C119D062BBE9B9900B2D7C4 /* RClickApp.swift */; };
 		5C119D0D2BBE9B9B00B2D7C4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C119D0C2BBE9B9B00B2D7C4 /* Assets.xcassets */; };
@@ -55,6 +63,12 @@
 		5CDFE3182CA3D66B00AE6C95 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDFE3172CA3D66000AE6C95 /* Constants.swift */; };
 		5CDFE3192CA3D66B00AE6C95 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CDFE3172CA3D66000AE6C95 /* Constants.swift */; };
 		5CFA85742D1477AD0063A6A1 /* LaunchAtLogin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CFA85732D1477AD0063A6A1 /* LaunchAtLogin.swift */; };
+		69F4FFDCDD5A490E91C21B3C /* FileOperationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B62F2EF0D32347B9AE8DF9FE /* FileOperationService.swift */; };
+		7AA396896396483A9B80A52F /* CommonDir.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A9944CDACA4035A5402963 /* CommonDir.swift */; };
+		ABCB7E94F1A248E985C2EE0C /* OpenWithApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A7D42261DA40A084606CEF /* OpenWithApp.swift */; };
+		DC8A2CAE64E14FB29A8DB9C9 /* NewFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 197AA78C788A415F94ED3B14 /* NewFile.swift */; };
+		E44AF20A32FE474A8898C697 /* NewFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 197AA78C788A415F94ED3B14 /* NewFile.swift */; };
+		FF37E0E54D7841D48838D8F7 /* PermissiveDir.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF0504C338F49659D41F56D /* PermissiveDir.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,6 +101,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		07A7D42261DA40A084606CEF /* OpenWithApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenWithApp.swift; sourceTree = "<group>"; };
+		0CF0504C338F49659D41F56D /* PermissiveDir.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissiveDir.swift; sourceTree = "<group>"; };
+		197AA78C788A415F94ED3B14 /* NewFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewFile.swift; sourceTree = "<group>"; };
+		3A309BD773E340629F3BF2DE /* RCAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCAction.swift; sourceTree = "<group>"; };
 		5C119D032BBE9B9900B2D7C4 /* RClick.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RClick.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C119D062BBE9B9900B2D7C4 /* RClickApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RClickApp.swift; sourceTree = "<group>"; };
 		5C119D0C2BBE9B9B00B2D7C4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -122,6 +140,9 @@
 		5CDFE3152CA3D63B00AE6C95 /* SettingsWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindow.swift; sourceTree = "<group>"; };
 		5CDFE3172CA3D66000AE6C95 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		5CFA85732D1477AD0063A6A1 /* LaunchAtLogin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLogin.swift; sourceTree = "<group>"; };
+		5E7AF270AC9543F0B6EA138E /* AppLaunchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchService.swift; sourceTree = "<group>"; };
+		A3A9944CDACA4035A5402963 /* CommonDir.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonDir.swift; sourceTree = "<group>"; };
+		B62F2EF0D32347B9AE8DF9FE /* FileOperationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileOperationService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -220,6 +241,8 @@
 				5C4288652BDA5536000C0828 /* AppLogger.swift */,
 				5C68BFE02C6651B80011C096 /* Extension+.swift */,
 				5CFA85732D1477AD0063A6A1 /* LaunchAtLogin.swift */,
+				B62F2EF0D32347B9AE8DF9FE /* FileOperationService.swift */,
+				5E7AF270AC9543F0B6EA138E /* AppLaunchService.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -237,6 +260,11 @@
 				5C4039F62E8F722E00AE4091 /* Models.swift */,
 				5C4039F32E8F716F00AE4091 /* ModelContainer.swift */,
 				5C945D012CA50AAC00DABD2C /* RCBase.swift */,
+				07A7D42261DA40A084606CEF /* OpenWithApp.swift */,
+				0CF0504C338F49659D41F56D /* PermissiveDir.swift */,
+				A3A9944CDACA4035A5402963 /* CommonDir.swift */,
+				3A309BD773E340629F3BF2DE /* RCAction.swift */,
+				197AA78C788A415F94ED3B14 /* NewFile.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -382,6 +410,11 @@
 				5CDFE3162CA3D65000AE6C95 /* SettingsWindow.swift in Sources */,
 				5CB470D32CEB7A3B009BC725 /* NewFileSettingsTabView.swift in Sources */,
 				5C945D032CA50AC000DABD2C /* RCBase.swift in Sources */,
+				1834E655212C4B569837F81A /* OpenWithApp.swift in Sources */,
+				19148EFD2DDA4EC6AEBCBE19 /* PermissiveDir.swift in Sources */,
+				59E295212FE248BDBFF9D80B /* CommonDir.swift in Sources */,
+				0775CA1FFBE046929BE96C2E /* RCAction.swift in Sources */,
+				DC8A2CAE64E14FB29A8DB9C9 /* NewFile.swift in Sources */,
 				5CFA85742D1477AD0063A6A1 /* LaunchAtLogin.swift in Sources */,
 				5C119D1A2BBE9D5700B2D7C4 /* SettingsView.swift in Sources */,
 				5C5CAB8B2E7FAF22001C5D58 /* Updater.swift in Sources */,
@@ -397,6 +430,8 @@
 				5C4039F52E8F717A00AE4091 /* ModelContainer.swift in Sources */,
 				5C34BAA52D943AF100CF8128 /* Utils.swift in Sources */,
 				5CDFE3192CA3D66B00AE6C95 /* Constants.swift in Sources */,
+				163C14062FDD4176AE6CA3C7 /* FileOperationService.swift in Sources */,
+				56FCF1021EEE4F748460721F /* AppLaunchService.swift in Sources */,
 			);
 		};
 		5C119D2C2BBEA9AC00B2D7C4 /* Sources */ = {
@@ -405,6 +440,11 @@
 				5C119D332BBEA9AC00B2D7C4 /* FinderSyncExt.swift in Sources */,
 				5C4039F72E8F723200AE4091 /* Models.swift in Sources */,
 				5C945D022CA50AC000DABD2C /* RCBase.swift in Sources */,
+				ABCB7E94F1A248E985C2EE0C /* OpenWithApp.swift in Sources */,
+				FF37E0E54D7841D48838D8F7 /* PermissiveDir.swift in Sources */,
+				7AA396896396483A9B80A52F /* CommonDir.swift in Sources */,
+				1ECCBD35FEF947E28134E75B /* RCAction.swift in Sources */,
+				E44AF20A32FE474A8898C697 /* NewFile.swift in Sources */,
 				5CDFE3182CA3D66B00AE6C95 /* Constants.swift in Sources */,
 				5C50D2922BBFD11100DF31AA /* StringExtension.swift in Sources */,
 				5C043AC32BEB7C1200C837D1 /* AppLogger.swift in Sources */,
@@ -415,6 +455,8 @@
 				5C945D072CA51B8F00DABD2C /* AppState.swift in Sources */,
 				5C5CAB8F2E7FE631001C5D58 /* UpdaterView.swift in Sources */,
 				5C5CAB8C2E7FAF22001C5D58 /* Updater.swift in Sources */,
+				69F4FFDCDD5A490E91C21B3C /* FileOperationService.swift in Sources */,
+				5B6D361F397C40F78188A9EB /* AppLaunchService.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */
@@ -500,7 +542,7 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 6.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -562,7 +604,7 @@
 				SDKROOT = macosx;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_VERSION = 6.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -581,21 +623,10 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"RClick/Preview Content\"";
 				DEVELOPMENT_TEAM = 6CTY427UQR;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
-				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RClick/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = RClick;
@@ -639,21 +670,10 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"RClick/Preview Content\"";
 				DEVELOPMENT_TEAM = 6CTY427UQR;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
-				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = RClick/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = RClick;
@@ -693,20 +713,9 @@
 				CURRENT_PROJECT_VERSION = 20260104001;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 6CTY427UQR;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
-				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FinderSyncExt/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = FinderSyncExt;
@@ -746,15 +755,9 @@
 				CURRENT_PROJECT_VERSION = 20260104001;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 6CTY427UQR;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
 				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = NO;
-				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FinderSyncExt/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = FinderSyncExt;

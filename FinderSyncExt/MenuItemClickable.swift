@@ -7,7 +7,7 @@
 
 import AppKit
 import Foundation
-import os.log
+import OSLog
 
 private let logger = Logger(subsystem: subsystem, category: "menu_click")
 

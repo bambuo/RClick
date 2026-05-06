@@ -5,15 +5,11 @@
 //  Created by 李旭 on 2024/4/4.
 //
 
-import AppKit
-import ExtensionFoundation
-import ExtensionKit
-import FinderSync
 import SwiftUI
 
 struct AboutSettingsTabView: View {
-    let messager = Messager.shared
-    @EnvironmentObject var updateManager: UpdateManager
+    let messenger = Messenger.shared
+    @Environment(UpdateManager.self) var updateManager
 
     var body: some View {
         VStack {

@@ -11,7 +11,7 @@ import SwiftUI
 struct MenuBarView: View {
     @Environment(\.openWindow) var openWindow: OpenWindowAction
 
-    let messager = Messager.shared
+    let messenger = Messenger.shared
 
     var body: some View {
         VStack {
@@ -42,7 +42,7 @@ struct MenuBarView: View {
     }
 
     private func actionQuit() {
-        messager.sendMessage(name: "quit", data: MessagePayload(action: "quit"))
+        messenger.sendMessage(name: "quit", data: MessagePayload(action: .quit))
 
         Task {
             try await Task.sleep(nanoseconds: UInt64(1.0 * 1e9))

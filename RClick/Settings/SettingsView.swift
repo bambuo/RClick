@@ -12,7 +12,7 @@ enum Tabs: String, CaseIterable, Identifiable {
     case apps = "Apps"
     case actions = "Actions"
     case newFile = "New File"
-    case cdirs = "Common Dir"
+    case commonDirs = "Common Dir"
     case about = "About"
 
     var id: String { self.rawValue }
@@ -23,7 +23,7 @@ enum Tabs: String, CaseIterable, Identifiable {
         case .apps: "apps.ipad.landscape"
         case .actions: "bolt.square"
         case .newFile: "doc.badge.plus"
-        case .cdirs: "folder.badge.gearshape"
+        case .commonDirs: "folder.badge.gearshape"
         case .about: "exclamationmark.circle"
         }
     }
@@ -31,7 +31,7 @@ enum Tabs: String, CaseIterable, Identifiable {
 
 struct SettingsView: View {
     @State private var selectedTab: Tabs = .general
-    @EnvironmentObject var appState: AppState
+    @Environment(AppState.self) var appState
     @State var showSelectApp = false
 
     @ViewBuilder
@@ -98,7 +98,7 @@ struct SettingsView: View {
                 ActionSettingsTabView()
             case .newFile:
                 NewFileSettingsTabView()
-            case .cdirs:
+            case .commonDirs:
                 CommonDirsSettingTabView()
             case .about:
                 AboutSettingsTabView()

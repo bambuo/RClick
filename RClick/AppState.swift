@@ -5,35 +5,32 @@
 //  Created by 李旭 on 2024/9/26.
 //
 
-import Combine
 import Foundation
 import OrderedCollections
+import OSLog
 import SwiftUI
 
 @MainActor
-class AppState: ObservableObject {
+@Observable
+class AppState {
     static let shared = AppState()
-    
-    @AppLog(category: "AppState")
-    private var logger
-    
-    @Published var apps: [OpenWithApp] = []
-    @Published var dirs: [PermissiveDir] = []
-    @Published var actions: [RCAction] = []
-    @Published var newFiles: [NewFile] = []
-    @Published var cdirs: [CommonDir] = []
-    @Published var inExt: Bool
-    
-    @Published var showMenuBar: Bool = true;
-    
-    
-    init(inExt: Bool = false) {
-        self.inExt = inExt
+
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "RClick", category: "AppState")
+
+    var apps: [OpenWithApp] = []
+    var dirs: [PermissiveDir] = []
+    var actions: [RCAction] = []
+    var newFiles: [NewFile] = []
+    var commonDirs: [CommonDir] = []
+    var isInExtension: Bool
+
+    var showMenuBar: Bool = true
+
+
+    init(isInExtension: Bool = false) {
+        self.isInExtension = isInExtension
         Task {
-            await MainActor.run {
-                logger.info("start load")
-                try? load()
-            }
+            try? load()
         }
     }
     
@@ -144,27 +141,27 @@ class AppState: ObservableObject {
         let actionItemsData = try encoder.encode(OrderedSet(actions))
         let filetypeItemsData = try encoder.encode(OrderedSet(newFiles))
         let permDirsData = try encoder.encode(OrderedSet(dirs))
-        let commonDirsData = try encoder.encode(OrderedSet(cdirs))
-        UserDefaults.group.set(appItemsData, forKey: Key.apps)
-        UserDefaults.group.set(actionItemsData, forKey: Key.actions)
-        UserDefaults.group.set(filetypeItemsData, forKey: Key.fileTypes)
-        UserDefaults.group.set(permDirsData, forKey: Key.permDirs)
-        UserDefaults.group.set(commonDirsData, forKey: Key.commonDirs)
+        let commonDirsData = try encoder.encode(OrderedSet(commonDirs))
+        UserDefaults.group.set(appItemsData, forKey: StorageKey.apps)
+        UserDefaults.group.set(actionItemsData, forKey: StorageKey.actions)
+        UserDefaults.group.set(filetypeItemsData, forKey: StorageKey.fileTypes)
+        UserDefaults.group.set(permDirsData, forKey: StorageKey.permDirs)
+        UserDefaults.group.set(commonDirsData, forKey: StorageKey.commonDirs)
     }
     
     @MainActor
     func savePermissiveDir() throws {
         let encoder = PropertyListEncoder()
         let permDirsData = try encoder.encode(OrderedSet(dirs))
-        UserDefaults.group.set(permDirsData, forKey: Key.permDirs)
+        UserDefaults.group.set(permDirsData, forKey: StorageKey.permDirs)
     }
 
     //  保存常用文件夹
     @MainActor
     func saveCommonDir() throws {
         let encoder = PropertyListEncoder()
-        let commonDirsData = try encoder.encode(OrderedSet(cdirs))
-        UserDefaults.group.set(commonDirsData, forKey: Key.commonDirs)
+        let commonDirsData = try encoder.encode(OrderedSet(commonDirs))
+        UserDefaults.group.set(commonDirsData, forKey: StorageKey.commonDirs)
         logger.info("save common dirs success")
     }
     
@@ -179,32 +176,23 @@ class AppState: ObservableObject {
     @MainActor
     private func load() throws {
         let decoder = PropertyListDecoder()
-        if !inExt {
-            if let permDirsData = UserDefaults.group.data(forKey: Key.permDirs) {
+        if !isInExtension {
+            if let permDirsData = UserDefaults.group.data(forKey: StorageKey.permDirs) {
                 dirs = try decoder.decode([PermissiveDir].self, from: permDirsData)
-                logger.info("load permDir success")
-                
+                logger.info("load permDir success, \(self.dirs.count) directories")
+
                 for dir in dirs {
                     var isStale = false
                     do {
                         let folderURL = try URL(resolvingBookmarkData: dir.bookmark, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &isStale)
 
                         if isStale {
-                            // 重新创建 bookmarkData
-                            // createBookmark(for: folderURL) // 这里可以调用之前的函数
+                            logger.warning("Bookmark is stale for \(dir.url.path)")
                         }
 
-                        // 进入安全范围
-                        let success = folderURL.startAccessingSecurityScopedResource()
-                        if success {
-                            // 完成后释放资源
-                            logger.info("startAccessingSecurityScopedResource success")
-//                            folderURL.stopAccessingSecurityScopedResource()
-                        } else {
-                            logger.warning("fail access scope \(dir.url.path)")
-                        }
+                        logger.info("Bookmark validated for \(folderURL.path)")
                     } catch {
-                        print("解析 bookmark 失败：\(error)")
+                        logger.error("Failed to resolve bookmark: \(error.localizedDescription)")
                     }
                 }
                  
@@ -215,16 +203,16 @@ class AppState: ObservableObject {
             }
         }
 
-        if let commonDirsData = UserDefaults.group.data(forKey: Key.commonDirs) {
-            cdirs = try decoder.decode([CommonDir].self, from: commonDirsData)
+        if let commonDirsData = UserDefaults.group.data(forKey: StorageKey.commonDirs) {
+            commonDirs = try decoder.decode([CommonDir].self, from: commonDirsData)
                 
             logger.info("load common dirs success")
         } else {
             logger.warning("load common dirs failed")
-            cdirs = []
+            commonDirs = []
         }
         
-        if let actionData = UserDefaults.group.data(forKey: Key.actions) {
+        if let actionData = UserDefaults.group.data(forKey: StorageKey.actions) {
             actions = try decoder.decode([RCAction].self, from: actionData)
             logger.info("load actions success")
         } else {
@@ -232,7 +220,7 @@ class AppState: ObservableObject {
             actions = RCAction.all
         }
         
-        if let filetypeItemData = UserDefaults.group.data(forKey: Key.fileTypes) {
+        if let filetypeItemData = UserDefaults.group.data(forKey: StorageKey.fileTypes) {
             newFiles = try decoder.decode([NewFile].self, from: filetypeItemData)
             logger.info("load filetype success")
         } else {
@@ -240,7 +228,7 @@ class AppState: ObservableObject {
             newFiles = NewFile.all
         }
         
-        if let appItemData = UserDefaults.group.data(forKey: Key.apps) {
+        if let appItemData = UserDefaults.group.data(forKey: StorageKey.apps) {
             apps = try decoder.decode([OpenWithApp].self, from: appItemData)
             logger.info("load apps success")
         } else {

@@ -9,7 +9,10 @@ import AppKit
 import SwiftUI
 
 struct AppsSettingsTabView: View {
-    @EnvironmentObject var appState: AppState
+    @AppLog(category: "AppsSettings")
+    private var logger
+
+    @Environment(AppState.self) var appState
     @State var showSelectApp = false
     @State private var expandedAppId: String?
     @State private var editingApp: OpenWithApp?
@@ -17,7 +20,7 @@ struct AppsSettingsTabView: View {
     @State private var editingArguments: String = ""
     @State private var editingEnvironment: String = ""
     
-    let messager = Messager.shared
+    let messenger = Messenger.shared
     
     var body: some View {
         ZStack {
@@ -137,10 +140,10 @@ struct AppsSettingsTabView: View {
                 case .success(let files):
                     if let url = files.first {
                         appState.addApp(item: OpenWithApp(appURL: url))
-                        messager.sendMessage(name: "running", data: MessagePayload(action: "running", target: []))
+                        messenger.sendMessage(name: "running", data: MessagePayload(action: .running, target: []))
                     }
                 case .failure(let error):
-                    print(error)
+                    logger.error("Failed to select app: \(error.localizedDescription)")
                 }
             }
             
@@ -227,7 +230,7 @@ struct AppsSettingsTabView: View {
             arguments: editingArguments.components(separatedBy: ";").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty },
             environment: parseEnvironmentVariables(editingEnvironment)
         )
-        messager.sendMessage(name: "running", data: MessagePayload(action: "running", target: []))
+        messenger.sendMessage(name: "running", data: MessagePayload(action: .running, target: []))
     }
     
     @MainActor private func deleteApp(_ appItem: OpenWithApp) {
@@ -237,6 +240,6 @@ struct AppsSettingsTabView: View {
                 expandedAppId = nil
             }
         }
-        messager.sendMessage(name: "running", data: MessagePayload(action: "running", target: []))
+        messenger.sendMessage(name: "running", data: MessagePayload(action: .running, target: []))
     }
 }
