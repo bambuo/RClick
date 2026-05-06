@@ -90,6 +90,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             case "heartbeat":
                 self.logger.warning("message from finder plugin heartbeat")
                 self.pluginRunning = true
+                let target: [String] = self.appState.dirs.map { $0.url.path() }
+                self.messager.sendMessage(name: "running", data: MessagePayload(action: "running", target: target))
             default:
                 self.logger.warning("actioning payload no matched")
             }

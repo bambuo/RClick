@@ -14,24 +14,18 @@ class SharedDataManager {
 
     static var sharedModelContainer: ModelContainer = {
         do {
-            // 获取 App Group 共享目录
-            let storeURL: URL
+            let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+            try FileManager.default.createDirectory(at: appSupport, withIntermediateDirectories: true)
+            let storeURL = appSupport.appendingPathComponent("RClickDatabase.sqlite")
 
-            guard let containerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier) else {
-                fatalError("无法获取 App Group 共享目录。请检查 App Group 配置: \(appGroupIdentifier)")
-            }
-            storeURL = containerURL.appendingPathComponent("RClickDatabase.sqlite")
-
-            // 创建 ModelConfiguration 使用共享路径
             let configuration = ModelConfiguration(
                 url: storeURL,
                 allowsSave: true,
                 cloudKitDatabase: .none
             )
 
-            // 创建 ModelContainer
             let container = try ModelContainer(
-                for: PermDir.self, // 你的模型类型
+                for: PermDir.self,
                 configurations: configuration
             )
 

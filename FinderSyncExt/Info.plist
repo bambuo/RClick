@@ -11,7 +11,13 @@
 		<key>ITSAppUsesNonExemptEncryption</key>
 		<false/>
 		<key>NSExtensionAttributes</key>
-		<dict/>
+		<dict>
+			<key>NSExtensionActivationRule</key>
+			<dict>
+				<key>NSExtensionActivationSupportsFileWithMaxCount</key>
+				<integer>100</integer>
+			</dict>
+		</dict>
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.FinderSync</string>
 		<key>NSExtensionPrincipalClass</key>
