@@ -8,6 +8,7 @@ import AppKit
 import Foundation
 import SwiftUI
 import SwiftData
+import CoreServices
 
 import OSLog
 
@@ -67,6 +68,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private lazy var fileOperationService = FileOperationService(appState: appState)
     private lazy var appLaunchService = AppLaunchService(appState: appState)
+    private lazy var commandRunnerService = CommandRunnerService(appState: appState)
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
 
@@ -74,6 +76,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             NSApp.setActivationPolicy(.regular)
         } else {
             NSApp.setActivationPolicy(.accessory)
+        }
+
+        Task.detached(priority: .background) {
+            let bundleID = Bundle.main.bundleIdentifier ?? "cn.wflixu.RClick"
+            let log = Logger(subsystem: bundleID, category: "LaunchServices")
+            Self.registerFinderExtension(logger: log)
         }
 
         messenger.on(name: StorageKey.messageFromFinder) { payload in
@@ -92,6 +100,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self.fileOperationService.createFile(rid: payload.rid, target: payload.target)
             case .openCommonDirs:
                 self.openCommonDirs(target: payload.target)
+            case .runQuickCommand:
+                self.commandRunnerService.runCommand(rid: payload.rid, target: payload.target)
             case .heartbeat:
                 self.logger.warning("message from finder plugin heartbeat")
                 self.pluginRunning = true
@@ -105,6 +115,109 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
     }
     
+    private static nonisolated func registerFinderExtension(logger: Logger) {
+        let bundleURL = Bundle.main.bundleURL
+        let appexPath = bundleURL.appendingPathComponent("Contents/PlugIns/FinderSyncExt.appex").path
+        let bundleID = Bundle.main.bundleIdentifier ?? "cn.wflixu.RClick"
+        let extensionID = "\(bundleID).FinderSyncExt"
+        let lsregisterPath = "/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister"
+
+        cleanLaunchServicesZombies(lsregisterPath: lsregisterPath, extensionID: extensionID, selfPath: bundleURL.path, logger: logger)
+
+        let task = Process()
+        task.launchPath = "/usr/bin/pluginkit"
+        task.arguments = ["-v", "-a", appexPath]
+        task.standardOutput = FileHandle.nullDevice
+        task.standardError = FileHandle.nullDevice
+
+        do {
+            try task.run()
+            task.waitUntilExit()
+            if task.terminationStatus == 0 {
+                logger.info("pluginkit -a succeeded")
+            } else {
+                logger.warning("pluginkit -a returned \(task.terminationStatus)")
+            }
+        } catch {
+            logger.warning("pluginkit failed: \(error.localizedDescription)")
+        }
+
+        let status = LSRegisterURL(bundleURL as CFURL, true)
+        if status == noErr {
+            logger.info("LSRegisterURL succeeded")
+        } else {
+            logger.warning("LSRegisterURL returned \(status)")
+        }
+    }
+
+    private static nonisolated func cleanLaunchServicesZombies(lsregisterPath: String, extensionID: String, selfPath: String, logger: Logger) {
+        let dump = Process()
+        dump.launchPath = lsregisterPath
+        dump.arguments = ["-dump"]
+        let pipe = Pipe()
+        dump.standardOutput = pipe
+        dump.standardError = FileHandle.nullDevice
+
+        do {
+            try dump.run()
+            dump.waitUntilExit()
+        } catch {
+            logger.warning("lsregister -dump failed: \(error.localizedDescription)")
+            return
+        }
+
+        guard let raw = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) else {
+            return
+        }
+
+        let lines = raw.components(separatedBy: "\n")
+        var zombiePaths = Set<String>()
+        var i = 0
+        while i < lines.count {
+            let line = lines[i]
+            if line.contains("plugin Identifiers:") && line.contains(extensionID) {
+                var j = i - 1
+                while j >= 0, j >= i - 30 {
+                    if lines[j].hasPrefix("path:") {
+                        let path = lines[j].replacingOccurrences(of: "path:", with: "")
+                            .trimmingCharacters(in: .whitespaces)
+                        if !path.isEmpty,
+                           path != selfPath,
+                           !path.hasPrefix(selfPath),
+                           !FileManager.default.fileExists(atPath: path) {
+                            zombiePaths.insert(path)
+                        }
+                        break
+                    }
+                    j -= 1
+                }
+            }
+            i += 1
+        }
+
+        for zombie in zombiePaths {
+            logger.info("Removing LS zombie: \(zombie)")
+            let unreg = Process()
+            unreg.launchPath = lsregisterPath
+            unreg.arguments = ["-u", zombie]
+            unreg.standardOutput = FileHandle.nullDevice
+            unreg.standardError = FileHandle.nullDevice
+            do {
+                try unreg.run()
+                unreg.waitUntilExit()
+                logger.info("Unregistered zombie: \(zombie)")
+            } catch {
+                logger.warning("Failed to unregister zombie: \(zombie), \(error.localizedDescription)")
+            }
+        }
+
+        if zombiePaths.isEmpty {
+            logger.info("No Launch Services zombies found")
+        } else {
+            logger.info("Cleaned \(zombiePaths.count) zombie Launch Services entries")
+        }
+    }
+
     func openCommonDirs(target: [String]) {
         logger.info("开始打开常用目录，目标路径: \(target)")
 

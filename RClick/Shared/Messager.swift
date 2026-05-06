@@ -14,6 +14,7 @@ enum MessageAction: String, Codable {
     case createFile = "Create File"
     case openCommonDirs = "common-dirs"
     case heartbeat = "heartbeat"
+    case runQuickCommand = "quick-command"
     case running = "running"
     case quit = "quit"
 }

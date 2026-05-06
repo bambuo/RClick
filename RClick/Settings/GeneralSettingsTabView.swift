@@ -240,6 +240,6 @@ struct GeneralSettingsTabView: View {
     }
 
     private func openExtensionset() {
-        FinderSync.FIFinderSyncController.showExtensionManagementInterface()
+        FIFinderSyncController.showExtensionManagementInterface()
     }
 }

@@ -69,6 +69,14 @@
 		DC8A2CAE64E14FB29A8DB9C9 /* NewFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 197AA78C788A415F94ED3B14 /* NewFile.swift */; };
 		E44AF20A32FE474A8898C697 /* NewFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 197AA78C788A415F94ED3B14 /* NewFile.swift */; };
 		FF37E0E54D7841D48838D8F7 /* PermissiveDir.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF0504C338F49659D41F56D /* PermissiveDir.swift */; };
+		9F5CE6B82459409B917203B2 /* QuickCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49A4969BE15499DA36E2A07 /* QuickCommand.swift */; };
+		2E56EAC15A5840BB8D252634 /* QuickCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = B49A4969BE15499DA36E2A07 /* QuickCommand.swift */; };
+		2F7F2DAC6DB14C4CB94FC70E /* CommandRunnerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA5BC212C334BD5AEA8C98D /* CommandRunnerService.swift */; };
+		5120438C02084AA294387885 /* CommandRunnerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA5BC212C334BD5AEA8C98D /* CommandRunnerService.swift */; };
+		2D818073A22D4D57B14AD53C /* QuickCommandsSettingsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C567815931A6414281E0A1BF /* QuickCommandsSettingsTabView.swift */; };
+		35F5CF31FD0A461D9D96AAD9 /* QuickCommandsSettingsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C567815931A6414281E0A1BF /* QuickCommandsSettingsTabView.swift */; };
+		802F72F6C35045BA806BBD48 /* QuickCommandEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B6F76814E64FE3AC7A6BCD /* QuickCommandEditorView.swift */; };
+		0E0B98E44E8140BDBB8B2682 /* QuickCommandEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B6F76814E64FE3AC7A6BCD /* QuickCommandEditorView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -143,6 +151,10 @@
 		5E7AF270AC9543F0B6EA138E /* AppLaunchService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLaunchService.swift; sourceTree = "<group>"; };
 		A3A9944CDACA4035A5402963 /* CommonDir.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonDir.swift; sourceTree = "<group>"; };
 		B62F2EF0D32347B9AE8DF9FE /* FileOperationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileOperationService.swift; sourceTree = "<group>"; };
+		B49A4969BE15499DA36E2A07 /* QuickCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickCommand.swift; sourceTree = "<group>"; };
+		4EA5BC212C334BD5AEA8C98D /* CommandRunnerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandRunnerService.swift; sourceTree = "<group>"; };
+		C567815931A6414281E0A1BF /* QuickCommandsSettingsTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickCommandsSettingsTabView.swift; sourceTree = "<group>"; };
+		47B6F76814E64FE3AC7A6BCD /* QuickCommandEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickCommandEditorView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -241,6 +253,7 @@
 				5C4288652BDA5536000C0828 /* AppLogger.swift */,
 				5C68BFE02C6651B80011C096 /* Extension+.swift */,
 				5CFA85732D1477AD0063A6A1 /* LaunchAtLogin.swift */,
+				4EA5BC212C334BD5AEA8C98D /* CommandRunnerService.swift */,
 				B62F2EF0D32347B9AE8DF9FE /* FileOperationService.swift */,
 				5E7AF270AC9543F0B6EA138E /* AppLaunchService.swift */,
 			);
@@ -260,6 +273,7 @@
 				5C4039F62E8F722E00AE4091 /* Models.swift */,
 				5C4039F32E8F716F00AE4091 /* ModelContainer.swift */,
 				5C945D012CA50AAC00DABD2C /* RCBase.swift */,
+				B49A4969BE15499DA36E2A07 /* QuickCommand.swift */,
 				07A7D42261DA40A084606CEF /* OpenWithApp.swift */,
 				0CF0504C338F49659D41F56D /* PermissiveDir.swift */,
 				A3A9944CDACA4035A5402963 /* CommonDir.swift */,
@@ -280,6 +294,8 @@
 			isa = PBXGroup;
 			children = (
 				5C74BA702D977DCD005673DB /* CommonDirsSettingTabView.swift */,
+				C567815931A6414281E0A1BF /* QuickCommandsSettingsTabView.swift */,
+				47B6F76814E64FE3AC7A6BCD /* QuickCommandEditorView.swift */,
 				5CDFE3152CA3D63B00AE6C95 /* SettingsWindow.swift */,
 				5C119D192BBE9D5700B2D7C4 /* SettingsView.swift */,
 				5C158AA82BC64654006EC625 /* GeneralSettingsTabView.swift */,
@@ -410,6 +426,10 @@
 				5CDFE3162CA3D65000AE6C95 /* SettingsWindow.swift in Sources */,
 				5CB470D32CEB7A3B009BC725 /* NewFileSettingsTabView.swift in Sources */,
 				5C945D032CA50AC000DABD2C /* RCBase.swift in Sources */,
+				9F5CE6B82459409B917203B2 /* QuickCommand.swift in Sources */,
+				2F7F2DAC6DB14C4CB94FC70E /* CommandRunnerService.swift in Sources */,
+				2D818073A22D4D57B14AD53C /* QuickCommandsSettingsTabView.swift in Sources */,
+				802F72F6C35045BA806BBD48 /* QuickCommandEditorView.swift in Sources */,
 				1834E655212C4B569837F81A /* OpenWithApp.swift in Sources */,
 				19148EFD2DDA4EC6AEBCBE19 /* PermissiveDir.swift in Sources */,
 				59E295212FE248BDBFF9D80B /* CommonDir.swift in Sources */,
@@ -440,6 +460,10 @@
 				5C119D332BBEA9AC00B2D7C4 /* FinderSyncExt.swift in Sources */,
 				5C4039F72E8F723200AE4091 /* Models.swift in Sources */,
 				5C945D022CA50AC000DABD2C /* RCBase.swift in Sources */,
+				2E56EAC15A5840BB8D252634 /* QuickCommand.swift in Sources */,
+				5120438C02084AA294387885 /* CommandRunnerService.swift in Sources */,
+				35F5CF31FD0A461D9D96AAD9 /* QuickCommandsSettingsTabView.swift in Sources */,
+				0E0B98E44E8140BDBB8B2682 /* QuickCommandEditorView.swift in Sources */,
 				ABCB7E94F1A248E985C2EE0C /* OpenWithApp.swift in Sources */,
 				FF37E0E54D7841D48838D8F7 /* PermissiveDir.swift in Sources */,
 				7AA396896396483A9B80A52F /* CommonDir.swift in Sources */,

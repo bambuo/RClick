@@ -173,6 +173,10 @@ class FinderSyncExt: FIFinderSync {
             applicationMenu.addItem(commonDirMenuItem)
         }
 
+        for item in createQuickCommandMenuItems() {
+            applicationMenu.addItem(item)
+        }
+
         for item in createActionMenuItems() {
             applicationMenu.addItem(item)
         }
@@ -269,6 +273,46 @@ class FinderSyncExt: FIFinderSync {
 
         messenger.sendMessage(name: StorageKey.messageFromFinder, data: MessagePayload(action: .openCommonDirs, target: [dirItem.url.path], rid: dirItem.id))
         logger.info("已发送打开常用文件夹消息: \(dirItem.name), 路径: \(dirItem.url.path)")
+    }
+
+    @objc func createQuickCommandMenuItems() -> [NSMenuItem] {
+        let enabledCommands = appState.quickCommands.filter(\.enabled)
+        guard !enabledCommands.isEmpty else { return [] }
+
+        let separator = NSMenuItem.separator()
+        var items: [NSMenuItem] = [separator]
+
+        for cmd in enabledCommands {
+            let menuItem = NSMenuItem()
+            menuItem.target = self
+            menuItem.title = String(localized: String.LocalizationValue(cmd.name))
+            menuItem.action = #selector(runQuickCommand(_:))
+            menuItem.tag = getUniqueTag(for: cmd.id)
+            menuItem.image = NSImage(systemSymbolName: cmd.icon, accessibilityDescription: cmd.name)
+            if cmd.dangerous {
+                menuItem.attributedTitle = NSAttributedString(
+                    string: "⚠ \(String(localized: String.LocalizationValue(cmd.name)))",
+                    attributes: [.foregroundColor: NSColor.systemOrange]
+                )
+            }
+            items.append(menuItem)
+        }
+
+        return items
+    }
+
+    @MainActor @objc func runQuickCommand(_ menuItem: NSMenuItem) {
+        guard let rid = tagToRidMap[menuItem.tag] else {
+            logger.warning("not get rid for quick command")
+            return
+        }
+        let _ = fetchAllPersistentPermDirs()
+        let target = getTargets(triggerMenuKind)
+        guard !target.isEmpty else {
+            logger.warning("not dir when running quick command")
+            return
+        }
+        messenger.sendMessage(name: StorageKey.messageFromFinder, data: MessagePayload(action: .runQuickCommand, target: target, rid: rid))
     }
 
     @objc func createFileCreateMenuItem() -> NSMenuItem? {

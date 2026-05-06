@@ -22,6 +22,7 @@ class AppState {
     var actions: [RCAction] = []
     var newFiles: [NewFile] = []
     var commonDirs: [CommonDir] = []
+    var quickCommands: [QuickCommand] = QuickCommand.presets
     var isInExtension: Bool
 
     var showMenuBar: Bool = true
@@ -142,11 +143,13 @@ class AppState {
         let filetypeItemsData = try encoder.encode(OrderedSet(newFiles))
         let permDirsData = try encoder.encode(OrderedSet(dirs))
         let commonDirsData = try encoder.encode(OrderedSet(commonDirs))
+        let quickCommandsData = try encoder.encode(OrderedSet(quickCommands))
         UserDefaults.group.set(appItemsData, forKey: StorageKey.apps)
         UserDefaults.group.set(actionItemsData, forKey: StorageKey.actions)
         UserDefaults.group.set(filetypeItemsData, forKey: StorageKey.fileTypes)
         UserDefaults.group.set(permDirsData, forKey: StorageKey.permDirs)
         UserDefaults.group.set(commonDirsData, forKey: StorageKey.commonDirs)
+        UserDefaults.group.set(quickCommandsData, forKey: StorageKey.quickCommands)
     }
     
     @MainActor
@@ -163,6 +166,45 @@ class AppState {
         let commonDirsData = try encoder.encode(OrderedSet(commonDirs))
         UserDefaults.group.set(commonDirsData, forKey: StorageKey.commonDirs)
         logger.info("save common dirs success")
+    }
+
+    @MainActor func addQuickCommand(_ item: QuickCommand) {
+        var mutable = item
+        mutable.idx = quickCommands.count
+        quickCommands.append(mutable)
+        try? save()
+    }
+
+    @MainActor func deleteQuickCommand(index: Int) {
+        quickCommands.remove(at: index)
+        reindexQuickCommands()
+        try? save()
+    }
+
+    @MainActor func toggleQuickCommand(id: String) {
+        if let idx = quickCommands.firstIndex(where: { $0.id == id }) {
+            quickCommands[idx].enabled.toggle()
+            try? save()
+        }
+    }
+
+    @MainActor func updateQuickCommand(_ item: QuickCommand) {
+        if let idx = quickCommands.firstIndex(where: { $0.id == item.id }) {
+            quickCommands[idx] = item
+            try? save()
+        }
+    }
+
+    @MainActor func resetQuickCommands() {
+        quickCommands = QuickCommand.presets
+        reindexQuickCommands()
+        try? save()
+    }
+
+    private func reindexQuickCommands() {
+        for i in quickCommands.indices {
+            quickCommands[i].idx = i
+        }
     }
     
     @MainActor func refresh() {
@@ -205,11 +247,18 @@ class AppState {
 
         if let commonDirsData = UserDefaults.group.data(forKey: StorageKey.commonDirs) {
             commonDirs = try decoder.decode([CommonDir].self, from: commonDirsData)
-                
             logger.info("load common dirs success")
         } else {
             logger.warning("load common dirs failed")
             commonDirs = []
+        }
+
+        if let quickCommandsData = UserDefaults.group.data(forKey: StorageKey.quickCommands) {
+            quickCommands = try decoder.decode([QuickCommand].self, from: quickCommandsData)
+            logger.info("load quickCommands success, \(self.quickCommands.count) commands")
+        } else {
+            logger.warning("load quickCommands failed, using presets")
+            quickCommands = QuickCommand.presets
         }
         
         if let actionData = UserDefaults.group.data(forKey: StorageKey.actions) {

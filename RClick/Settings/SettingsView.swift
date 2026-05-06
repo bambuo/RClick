@@ -12,6 +12,7 @@ enum Tabs: String, CaseIterable, Identifiable {
     case apps = "Apps"
     case actions = "Actions"
     case newFile = "New File"
+    case quickCommands = "Quick Commands"
     case commonDirs = "Common Dir"
     case about = "About"
 
@@ -23,6 +24,7 @@ enum Tabs: String, CaseIterable, Identifiable {
         case .apps: "apps.ipad.landscape"
         case .actions: "bolt.square"
         case .newFile: "doc.badge.plus"
+        case .quickCommands: "terminal"
         case .commonDirs: "folder.badge.gearshape"
         case .about: "exclamationmark.circle"
         }
@@ -98,6 +100,8 @@ struct SettingsView: View {
                 ActionSettingsTabView()
             case .newFile:
                 NewFileSettingsTabView()
+            case .quickCommands:
+                QuickCommandsSettingsTabView()
             case .commonDirs:
                 CommonDirsSettingTabView()
             case .about:

@@ -53,6 +53,7 @@ enum StorageKey {
     static let fileTypes = "RCLICK_FILE_TYPES"
     static let permDirs = "RCLICK_PERMISSIVE_DIRS"
     static let commonDirs = "RCLICK_COMMON_DIRS"
+    static let quickCommands = "RCLICK_QUICK_COMMANDS"
     static let showMenuBarExtra = "showMenuBarExtra"
     static let showInDock = "SHOW_IN_DOCK"
 }

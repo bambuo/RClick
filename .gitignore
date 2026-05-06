@@ -58,3 +58,4 @@ playground.xcworkspace
 output/*
 Build/
 DerivedData/
+dist_build/

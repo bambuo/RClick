@@ -306,6 +306,7 @@ class UpdateManager {
             }
 
             task.resume()
+            session.finishTasksAndInvalidate()
         }
     }
 
